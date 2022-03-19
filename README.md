@@ -3,7 +3,7 @@
 ## Grading
 
 Unlike previous homeworks there is no autograding. This is because Github limits the number of
-threads that can be created. Therefore, after the __deadline__ i will download your work to my computer and test it. That is why it is important that you test your code before you final submission.
+threads that can be created. Therefore, after the __deadline__ i will download your work to my computer and test it. That is why it is important that you test your code before your final submission.
 As before you can commit as many times as you want until the deadline.
 
 ## Prefix sum
@@ -17,14 +17,21 @@ std::inclusive_scan(first,last,o_first,std::plus{},0.0);
 ```
 Where _first_ and _last_ are the range of the input and _o\_first_ the beginning of the output, which in this homework we will set to _first_.
 
-In this par you are asked to implement a parallel version of ```inclusive_scan``` in the file ```hw2.h```.
+In this part you are asked to implement a parallel version of ```inclusive_scan``` in the file ```hw2.h```.
 ```cpp
 template<typename T>
 void parScan(std::vector<T>& v){
 
 }
 ```
-If your compiler does not support the ```barrier``` class you can use the one supplied in ```barrier.h```
+Make sure you compile with c++20 support so that you can use the ```barrier``` class. If you have an old compiler that does not support c++20 , you can use the barrier class supplied in ```barrier.h```
+### Solution 
+The solution to the above problem is done using  multiple phases with the help of a barrier. In the first phase, the range is divided into subranges and a thread computes scan on that range.
+In subsequent phases, only threads with (id+1) is multiple of a stride will participate by adding the last of value of the previous range to each value in its own range.
+
+A simple example with 16 elements and 8 threads is shown in the figure below.
+
+![fig](scan.png)
 
 ## Quicksort
 
@@ -37,8 +44,8 @@ Iter partition(Iter start,Iter end)
 ```
 It partitions the input range into two parts: the "left" one are all the values less or equal to the pivot, and
 a "right" part containing all the values larger than the pivot. Since the input range are all random numbers always
-use the first element, i.e. ```*start``` as the pivot. The return value is an iterator to the pivot, which after
-partition returns will be in "between" the two parts.
+use the first element, i.e. ```*start``` as the pivot. The return value is an iterator to the pivot which, after
+partition returns, will be in "between" the two parts.
 
 2. Implement a sequential version of quicksort
 
@@ -58,5 +65,5 @@ void parQuicksort(Iter start, Iter end) {
 Unlike previous examples, the parallel version of quicksort is "top down" instead of "bottom up". A given call
 to quicksort calls partition to divide the input range into two parts as described above. Then a thread is created
 to sort each part independently. To minimize the overhead of creating too many threads we define a __cutoff__ size
-for the range below which the serial versions is called. A good cutoff would restrict the number of created thread to 
-less than 64.
+for the range below which, an iterative sorting algorithm, such as insertion sort, is called. A good cutoff would restrict the number of created thread to 
+less than 64. After the cutoff you can use ```std::sort```.

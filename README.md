@@ -29,7 +29,7 @@ Make sure you compile with c++20 support so that you can use the ```barrier``` c
 The solution to the above problem is done using  multiple phases with the help of a barrier. In the first phase, the range is divided into subranges and a thread computes scan on that range.
 In subsequent phases, only threads with (id+1) is multiple of a stride will participate by adding the last of value of the previous range to each value in its own range.
 
-A simple example with 16 elements and 8 threads is shown in the figure below.
+A simple example with 8 elements and 4 threads is shown in the figure below.
 
 ![fig](scan.png)
 

@@ -28,6 +28,9 @@ std::barrier barrier(NUM_THREADS);
 template<typename T>
 void parScan(std::vector<T>& v) {
 	/* Write your code here */
+//parscan still studying 
+	
+
 }
 
 template <typename Iter>
@@ -36,16 +39,40 @@ Iter partition(Iter start, Iter end) {
 	/* assume the input is random and select the
 	* first element as pivot
 	*/
-	
+	Iter pivot = start;
+
+	for (Iter i = start; i != end; i++) {
+		if (i < pivot) {
+			std::iter_swap(i, start);
+			start++;
+		}
+	}
+
+	std::iter_swap(start, pivot);
+	return start;
 }
 
 template<typename Iter>
 void seqQuicksort(Iter start, Iter end) {
 	/* Write your code here */
+	if (end - start < 2) {
+		return;
+	}
+	Iter pivot = partition(start, end);
+	seqQuicksort(start, pivot);
+	seqQuicksort(pivot + 1, end);
 }
 
 
 template<typename Iter>
 void parQuicksort(Iter start, Iter end) {
 	/* Write your code here */
+	if (end - start < 2) {
+		return;
+	}
+	Iter pivot = partition(start, end);
+	std::thread t1(parQuicksort<Iter>, start, pivot);
+	std::thread t2(parQuicksort<Iter>, pivot + 1, end);
+	t1.join();
+	t2.join();
 }
